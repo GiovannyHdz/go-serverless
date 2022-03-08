@@ -12,7 +12,7 @@ import (
 var ErrorMethodNotAllowed = "method not allowed"
 
 type ErrorBody struct {
-	ErrorMsg *string `json:"error, omitempty"`
+	ErrorMsg *string `json:"error,omitempty"`
 }
 
 func GetUser(req events.APIGatewayProxyRequest, tableName string, dynaclient dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
@@ -37,15 +37,33 @@ func GetUser(req events.APIGatewayProxyRequest, tableName string, dynaclient dyn
 }
 
 func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynaclient dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
-
+	result, err := user.CreateUser(req, tableName, dynaclient)
+	if err != nil {
+		return apiResponse(http.StatusBadRequest, ErrorBody{
+			aws.String(err.Error()),
+		})
+	}
+	return apiResponse(http.StatusCreated, result)
 }
 
 func UpdateUser(req events.APIGatewayProxyRequest, tableName string, dynaclient dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
-
+	result, err := user.UpdateUser(req, tableName, dynaclient)
+	if err != nil {
+		return apiResponse(http.StatusBadRequest, ErrorBody{
+			aws.String(err.Error()),
+		})
+	}
+	return apiResponse(http.StatusOK, result)
 }
 
 func DeleteUser(req events.APIGatewayProxyRequest, tableName string, dynaclient dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
-
+	err := user.DeleteUser(req, tableName, dynaclient)
+	if err != nil {
+		return apiResponse(http.StatusBadRequest, ErrorBody{
+			aws.String(err.Error()),
+		})
+	}
+	return apiResponse(http.StatusOK, nil)
 }
 
 func UnhandledMethod() (*events.APIGatewayProxyResponse, error) {

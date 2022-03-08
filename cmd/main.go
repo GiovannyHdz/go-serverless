@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/GiovannyHdz/go-serverless/pkg/handlers"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
@@ -11,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 )
 
-const tableName = "LambdaInGoUser"
+const tableName = "users"
 
 var (
 	dynaClient dynamodbiface.DynamoDBAPI
@@ -31,7 +32,7 @@ func main() {
 	lambda.Start(handler)
 }
 
-func handler(req events.APIGatewayProxyRequest) *events.APIGatewayProxyResponse {
+func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	switch req.HTTPMethod {
 	case "GET":
 		return handlers.GetUser(req, tableName, dynaClient)
